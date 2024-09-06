@@ -3,13 +3,6 @@
 # Student Name: Kim Tran
 # Student ID: 10657323
 
-# 1. Input original.csv and processed.csv from terminal
-# 2. Validate the inputs
-# 3. Remove the headers from original.csv
-# 4. Format "Time" column into "Date" only
-# 5. Extract "URL" column
-# 6. Separate 3 fields "Method", "URL" and "Protocol" from original "URL" column
-
 # Assign arguments passed from the terminal to variables
 original_file=$1
 processed_file=$2
@@ -24,7 +17,27 @@ if [[ -z $processed_file ]] || [[ ! $original_file =~ ^[A-Za-z]+\.csv$ ]]; then 
     exit 1      # Exit program with status code 1 on failed validation
 fi
 
+echo "Processing..."
+count=0
+
 # 1st line: Remove the header line from the original file
 # 2nd line: Replace the datetime format with date only and ouput to "temp.csv"    
-sed -e '1d'\
-    -e 's/\[\(.*\/.*\/.*\):[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/\1/g' $original_file > temp.csv  
+# sed -e '1d'\
+#     -e 's/\[\(.*\/.*\/.*\):[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/\1/g' $original_file > temp.csv
+
+# Add header line to the output file
+echo "IP,Date,Method,URL,Protocol,Status" > $processed_file
+
+# IFS value set to comma to match the source file format
+while IFS=',' read -r ip date full_url status || [ -n "$line" ]; do  # Read line by line
+    method=$(echo "$full_url" | cut -d' ' -f1)  # Extract the 1st part as method
+    url=$(echo "$full_url" | cut -d' ' -f2 | sed 's/^\///') # Extract the 2nd part as url and remove the first slash (/)
+    protocol=$(echo "$full_url" | cut -d' ' -f3)    # Extract the 3rd part as protocol
+    count=$((count + 1))    # Increment the counter by 1
+    echo "$ip,$date,$method,$url,$protocol,$status" >> $processed_file
+done < <(sed -e '1d'\
+             -e 's/\[\(.*\/.*\/.*\):[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/\1/g' $original_file)  # Remove the header line and replace datetime with date only in the original file
+                                                                                                # and use process substitution to feed the formatted file to while loop
+
+echo "$count records processed..."
+# **** Missing last record in ouput file *****
