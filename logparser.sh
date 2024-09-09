@@ -20,10 +20,13 @@ fi
 echo "Processing..."
 count=0
 
-# 1st line: Remove the header line from the original file
-# 2nd line: Replace the datetime format with date only and ouput to "temp.csv"    
-# sed -e '1d'\
-#     -e 's/\[\(.*\/.*\/.*\):[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/\1/g' $original_file > temp.csv
+# 1st line: Remove the header line
+# 2nd line: Replace the datetime format with date only   
+sed -e '1d'\
+    -e 's/\[\(.*\/.*\/.*\):[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/\1/g'\
+    "$original_file" > temp.csv     # Read from the original file and output formatted content to "temp.csv"
+
+echo "" >> temp.csv     # Add new line at the end of "temp.csv" for while loop to not skip the last line
 
 # Add header line to the output file
 echo "IP,Date,Method,URL,Protocol,Status" > $processed_file
@@ -35,9 +38,8 @@ while IFS=',' read -r ip date full_url status || [ -n "$line" ]; do  # Read line
     protocol=$(echo "$full_url" | cut -d' ' -f3)    # Extract the 3rd part as protocol
     count=$((count + 1))    # Increment the counter by 1
     echo "$ip,$date,$method,$url,$protocol,$status" >> $processed_file
-done < <(sed -e '1d'\
-             -e 's/\[\(.*\/.*\/.*\):[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/\1/g' $original_file)  # Remove the header line and replace datetime with date only in the original file
-                                                                                                # and use process substitution to feed the formatted file to while loop
+done < temp.csv
 
 echo "$count records processed..."
-# **** Missing last record in ouput file *****
+rm temp.csv     # Remove temp.csv before exiting program
+exit 0
