@@ -36,14 +36,25 @@ echo "" >> temp.csv     # Add new line at the end of "temp.csv" for while loop t
 echo "IP,Date,Method,URL,Protocol,Status" > $processed_file
 
 # IFS value set to comma to match the source file format
-while IFS=',' read -r ip date full_url status || [ -n "$line" ]; do  # Read line by line
-    method=$(echo "$full_url" | cut -d' ' -f1)  # Extract the 1st part as method
-    url=$(echo "$full_url" | cut -d' ' -f2 | sed 's/^\///') # Extract the 2nd part as url and remove the first slash (/)
-    protocol=$(echo "$full_url" | cut -d' ' -f3)    # Extract the 3rd part as protocol
-    count=$((count + 1))    # Increment the counter by 1
+while IFS=',' read -r ip date full_url status || [ -n "$line" ]; do  # Read line by line in the "temp.csv"
+    # Extract the 1st part of "full_url" and assign it to "method"
+    method=$(echo "$full_url" | cut -d' ' -f1)
+    
+    # Extract the 2nd part of "full_url"
+        # remove the leading slash (/) and everything starting from the question mark (?) onward
+        # then assign it to "url"
+    url=$(echo "$full_url" | cut -d' ' -f2 | sed -e 's/^\///; s/\?.*//')
+
+    # Extract the 3rd part of "full_url" and assign it to "protocol"
+    protocol=$(echo "$full_url" | cut -d' ' -f3)
+
+    # Increment the counter by 1
+    count=$((count + 1))
+
+    # Write the entry to the output file
     echo "$ip,$date,$method,$url,$protocol,$status" >> $processed_file
 done < temp.csv
 
-echo "$count records processed..."
+echo "$count records processed..."  # Print the number of processed records
 rm temp.csv     # Remove temp.csv before exiting program
-exit 0
+exit 0      # Exit program with status code 0
