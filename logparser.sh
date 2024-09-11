@@ -5,12 +5,12 @@
 
 validate_input() {
     if [[ -z $1 ]] || [[ ! $1 =~ ^[A-Za-z]+\.csv$ ]] || [[ ! -f $1 ]]; then  # Check if original file is empty or is not a .csv file or not existed
-        echo "Please input a valid original file"  # Print invalid message
+        echo "Please input a valid input file"  # Print invalid message
         exit 1      # Exit program with status code 1 on failed validation
     fi
 
     if [[ -z $2 ]] || [[ ! $2 =~ ^[A-Za-z]+\.csv$ ]]; then  # Check if original file is empty or is not a .csv file
-        echo "Please input a valid processed file"  # Print invalid message
+        echo "Please input a valid output file"  # Print invalid message
         exit 1      # Exit program with status code 1 on failed validation
     fi
 }
