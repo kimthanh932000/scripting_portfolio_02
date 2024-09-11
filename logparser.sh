@@ -3,25 +3,29 @@
 # Student Name: Kim Tran
 # Student ID: 10657323
 
-# Assign arguments passed from the terminal to variables
+validate_input() {
+    if [[ -z $1 ]] || [[ ! $1 =~ ^[A-Za-z]+\.csv$ ]] || [[ ! -f $1 ]]; then  # Check if original file is empty or is not a .csv file or not existed
+        echo "Please input a valid original file"  # Print invalid message
+        exit 1      # Exit program with status code 1 on failed validation
+    fi
+
+    if [[ -z $2 ]] || [[ ! $2 =~ ^[A-Za-z]+\.csv$ ]]; then  # Check if original file is empty or is not a .csv file
+        echo "Please input a valid processed file"  # Print invalid message
+        exit 1      # Exit program with status code 1 on failed validation
+    fi
+}
+
+# Assign arguments passed from the terminal to appropriate variables
 original_file=$1
 processed_file=$2
 
-if [[ -z $original_file ]] || [[ ! $original_file =~ ^[A-Za-z]+\.csv$ ]] || [[ ! -f $original_file ]]; then  # Check if original file is empty or is not a .csv file or not existed
-    echo "Please input a valid original file"  # Print invalid message
-    exit 1      # Exit program with status code 1 on failed validation
-fi
-
-if [[ -z $processed_file ]] || [[ ! $original_file =~ ^[A-Za-z]+\.csv$ ]]; then  # Check if original file is empty or is not a .csv file
-    echo "Please input a valid processed file"  # Print invalid message
-    exit 1      # Exit program with status code 1 on failed validation
-fi
+validate_input "$original_file" "$processed_file"
 
 echo "Processing..."
 count=0
 
-# 1st line: Remove the header line
-# 2nd line: Replace the datetime format with date only   
+# Line 29: Remove the header line
+# Line 30: Replace the datetime format with date only
 sed -e '1d'\
     -e 's/\[\(.*\/.*\/.*\):[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/\1/g'\
     "$original_file" > temp.csv     # Read from the original file and output formatted content to "temp.csv"
