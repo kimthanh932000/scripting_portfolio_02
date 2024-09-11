@@ -4,13 +4,13 @@
 # Student ID: 10657323
 
 validate_input() {
-    if [[ -z $1 ]] || [[ ! $1 =~ ^[A-Za-z]+\.csv$ ]] || [[ ! -f $1 ]]; then  # Check if original file is empty or is not a .csv file or not existed
-        echo "Please input a valid input file"  # Print invalid message
+    if [[ -z $1 ]] || [[ ! $1 =~ ^[A-Za-z]+\.csv$ ]] || [[ ! -f $1 ]]; then  # Check if source file is empty or is not a .csv file or not existed
+        echo "Please provide a valid source file"  # Print invalid message
         exit 1      # Exit program with status code 1 on failed validation
     fi
 
-    if [[ -z $2 ]] || [[ ! $2 =~ ^[A-Za-z]+\.csv$ ]]; then  # Check if original file is empty or is not a .csv file
-        echo "Please input a valid output file"  # Print invalid message
+    if [[ -z $2 ]] || [[ ! $2 =~ ^[A-Za-z]+\.csv$ ]]; then  # Check if output file is empty or is not a .csv file
+        echo "Please provide a valid output file name"  # Print invalid message
         exit 1      # Exit program with status code 1 on failed validation
     fi
 }
